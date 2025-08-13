@@ -1,0 +1,91 @@
+---
+import { posts as localPosts } from "../lib/data/posts";
+import Categories from "./Categories.astro";
+import type Post from "../interfaces/post.js";
+
+interface Props {
+  posts?: Post[];
+}
+
+const { posts: providedPosts } = Astro.props as Partial<Props>;
+
+const posts: Post[] = providedPosts ?? localPosts.slice(0, 6);
+---
+{
+  posts.map((post) => {
+    const { title, description, slug, publishedAt, featuredImage, categories = [] } = post
+    const { url, alternativeText } = featuredImage;
+    
+    return (
+      <article>
+          <a href={`/blog/${slug}`} aria-label={`Leer: ${title}`} title={title}>
+          <img src={url} alt={alternativeText} />
+          <div class="content">
+            <h2>{title}</h2>
+            <p>{description}</p>
+            <time datetime={publishedAt}>
+              {new Date(publishedAt).toLocaleDateString()}
+            </time>
+            <Categories categories={categories} variant="badges" />
+          </div>
+        </a>
+      </article>
+    );
+  })
+}
+
+<style>
+  article {
+    border-radius: 8px;
+    background-color: rgba(42, 42, 42, 0.3);
+    transition: transform 0.2s;
+  }
+
+  a {
+    text-decoration: none;
+    display: block;
+  }
+
+  .grid-article {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 16px;
+    padding: 16px;
+  }
+
+  article:hover {
+    transform: scale(1.02);
+    transition: ease-in-out 0.2s;
+  }
+
+  .hero {
+    text-align: center;
+    padding: 40px 20px;
+  }
+
+  img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 8px 8px 0 0;
+  }
+
+  time {
+    display: block;
+    margin-top: 8px;
+    color: #888;
+    font-size: 0.9em;
+  }
+
+  .content {
+    padding: 0 16px 16px 16px;
+  }
+
+  .content p {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+  }
+</style>

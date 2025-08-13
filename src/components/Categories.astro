@@ -1,0 +1,81 @@
+---
+import type { Category } from "../interfaces/post";
+
+interface Props {
+  categories?: Category[];
+  variant?: 'badges' | 'list';
+  title?: string;
+}
+
+const { categories = [], variant = 'badges', title } = Astro.props as Props;
+
+if (!categories || categories.length === 0) {
+  return null;
+}
+---
+
+{variant === 'badges' ? (
+  <div class="badges">
+    {categories.map((c) => (
+      <a
+        class="badge"
+        href={`/categories/${c.slug}`}
+        aria-label={`Ver artículos de la categoría ${c.Name}`}
+        title={`Categoría: ${c.Name}`}
+      >
+        {c.Name}
+      </a>
+    ))}
+  </div>
+) : (
+  <>
+    {title && <h4>{title}</h4>}
+    <ul class="cat-list">
+      {categories.map((c) => (
+        <li>
+          <a
+            href={`/categories/${c.slug}`}
+            aria-label={`Ver artículos de la categoría ${c.Name}`}
+            title={`Categoría: ${c.Name}`}
+          >
+            {c.Name}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </>
+)}
+
+<style>
+
+  .badges {
+    display: flex; 
+    flex-wrap: wrap;
+    margin-top: 8px; 
+    gap: 4px;
+    margin-left: -4px;
+  }
+
+  .badge { 
+    font-size: 12px; 
+    padding: 2px 8px; 
+    border-radius: 999px; 
+    background: rgba(0, 153, 255, 0.15); 
+    color: #09f; 
+    text-decoration: none;
+  }
+
+  .cat-list { 
+    list-style: none; 
+    padding: 0; 
+    margin: 0; 
+    display: flex; 
+    gap: 8px; 
+    flex-wrap: wrap; 
+  }
+
+  .cat-list a { 
+    color: #09f; 
+    text-decoration: none; 
+  }
+</style>

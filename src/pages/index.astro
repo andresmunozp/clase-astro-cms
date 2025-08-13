@@ -1,0 +1,36 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Cards from "../components/Cards.astro";
+
+const title = "Pagina inicial del blog";
+const description = "Blog sobre Astro y CMS headless";
+---
+
+<Layout title={title} description={description}>
+  <section class="hero">
+    <h1>Curso de Astro + CMS</h1>
+    <p>Aprende a crear un blog con Astro y un CMS headless.</p>
+  </section>
+
+  <main>
+    <div class="grid-article">
+		  <Cards />
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .grid-article {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 16px;
+    padding: 16px;
+    max-width: 1200px;
+    margin-inline: auto;
+  }
+
+  .hero {
+    text-align: center;
+    padding: 40px 20px;
+  }
+</style>

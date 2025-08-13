@@ -1,0 +1,117 @@
+---
+import type { Heading } from "../interfaces/heading";
+
+interface Props {
+  extractedHeadings: Heading[];
+}
+
+const { extractedHeadings } = Astro.props;
+
+const headings = extractedHeadings.map(({ level, text, id }) => {
+  const indentClass = `heading-level-${level}`;
+  return `<a class="heading-link ${indentClass}" href="#${id}">${text}</a>`;
+});
+---
+
+<aside class="table-of-contents">
+  <h2>Tabla de Contenidos</h2>
+  <div set:html={headings} />
+</aside>
+
+<style>
+    .table-of-contents {
+      position: sticky;
+      top: 20px;
+      height: max-content;
+      border-radius: 8px;
+      flex: 0.3 0 150px;
+    }
+    /* Estilos para tabla de contenidos */
+    :global(.heading-link) {
+      display: block;
+      margin-bottom: 8px;
+      padding: 4px 0;
+      color: #888;
+      text-decoration: none;
+      border-radius: 4px;
+      transition: color 0.2s ease;
+      font-weight: 400;
+      border-left: 3px solid transparent;
+      
+    }
+
+    :global(.heading-link:hover) {
+      color: #ddd;
+    }
+
+    /* Estado activo cuando la sección está visible */
+    :global(.heading-link.active) {
+      color: #1e90ff;
+      background-color: rgba(30, 144, 255, 0.1);
+      border-left: 3px solid #1e90ff;
+    }
+
+    :global(.heading-level-1) { padding-left: 8px; }
+    :global(.heading-level-2) { padding-left: 20px; }
+    :global(.heading-level-3) { padding-left: 40px; }
+    :global(.heading-level-4) { padding-left: 60px; }
+
+    @media (max-width: 768px) {
+      .table-of-contents {
+        display: none;
+      }
+    }
+</style>
+
+<script>
+  function setupTOCHighlight() {
+    const tocLinks = document.querySelectorAll(".heading-link");
+    const headingElements = document.querySelectorAll(
+      "h1[id], h2[id], h3[id], h4[id]"
+    );
+    const headingMap = new Map();
+
+    // Si no hay elementos, salir
+    if (tocLinks.length === 0 || headingElements.length === 0) return;
+
+    // Mapear id → link
+    tocLinks.forEach((link) => {
+      const id = link.getAttribute("href")?.replace("#", "");
+      if (id) headingMap.set(id, link);
+    });
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const id = entry.target.getAttribute("id");
+          if (!id) return;
+
+          const link = headingMap.get(id);
+          if (!link) return;
+
+          if (entry.isIntersecting) {
+            // Quitar clase activa de todos
+            tocLinks.forEach((l) => l.classList.remove("active"));
+            // Activar el link correspondiente
+            link.classList.add("active");
+          }
+        });
+      },
+      {
+        rootMargin: "0% 0px -80% 0px",
+        threshold: 0.1,
+      }
+    );
+
+    headingElements.forEach((heading) => observer.observe(heading));
+
+  // Limpiar observer cuando la página cambie
+  document.addEventListener("astro:before-preparation", () => {
+      observer.disconnect();
+    });
+  }
+  // Ejecutar en carga inicial
+  document.addEventListener("DOMContentLoaded", setupTOCHighlight);
+  // Ejecutar después de las transiciones de Astro (para navegación SPA)
+  document.addEventListener("astro:page-load", setupTOCHighlight);
+</script>
