@@ -2,6 +2,7 @@
 import { posts as localPosts } from "../lib/data/posts";
 import Categories from "./Categories.astro";
 import type Post from "../interfaces/post.js";
+import fetchApi from "../lib/strapi.js";
 
 interface Props {
   posts?: Post[];
@@ -9,17 +10,29 @@ interface Props {
 
 const { posts: providedPosts } = Astro.props as Partial<Props>;
 
-const posts: Post[] = providedPosts ?? localPosts.slice(0, 6);
+const posts: Post[] = providedPosts ?? await fetchApi<Post[]>({
+  endpoint: "posts?populate=featuredImage&populate=categories",
+  query: {
+    sort: "createdAt:desc",
+    "pagination[limit]": "6",
+  },
+  wrappedByKey: "data"
+});
+
+const url_image = "http://localhost:1337";
 ---
 {
   posts.map((post) => {
-    const { title, description, slug, publishedAt, featuredImage, categories = [] } = post
-    const { url, alternativeText } = featuredImage;
-    
+    const { title, description, slug, publishedAt, featuredImage, categories = [] } = post;
+    const { url, alternativeText } = featuredImage || {};
+    const imageUrl = featuredImage ? `${url_image}${url}` : '';
+
     return (
       <article>
           <a href={`/blog/${slug}`} aria-label={`Leer: ${title}`} title={title}>
-          <img src={url} alt={alternativeText} />
+          {featuredImage && (
+            <img src={imageUrl} alt={alternativeText} />
+          )}
           <div class="content">
             <h2>{title}</h2>
             <p>{description}</p>

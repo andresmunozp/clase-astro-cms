@@ -6,20 +6,25 @@ import type { Category } from "../../interfaces/post";
 import { posts } from "../../lib/data/posts";
 import { categories as localCategories } from "../../lib/data/categories";
 import Cards from "../../components/Cards.astro";
+import fetchApi from "../../lib/strapi.js";
 
-const { category: slug } = Astro.params;
+const { category } = Astro.params;
 
-const cat = localCategories.find((c) => c.slug === slug);
+const posts = await fetchApi<Post[]>({
+  endpoint: "posts",
+  query: {
+    "filters[categories][slug][$contains]": category,
+    "populate": "*"
+  },
+  wrappedByKey: "data"
+});
 
-if (!cat) {
+if (!posts || posts.length === 0) {
   return new Response(null, { status: 404, statusText: "Categoría no encontrada" });
 }
 
-const filteredPosts = posts.filter((post) =>
-  post.categories?.some((c) => c.Name === cat.name || c.Name === cat.Name)
-);
-
-const name = cat.name || cat.Name;
+const categoryPosts = posts;
+const name = category;
 const title = `Categoría: ${name}`;
 const description = `Artículos en la categoría ${name}`;
 ---
@@ -29,11 +34,11 @@ const description = `Artículos en la categoría ${name}`;
     <h1>{title}</h1>
     <a href="/">← Todas las categorías</a>
     {
-      filteredPosts.length === 0 ? (
+      categoryPosts.length === 0 ? (
         <p>No hay artículos en esta categoría.</p>
       ) : (
         <div class="grid-article">
-          <Cards posts={filteredPosts} />
+          <Cards posts={categoryPosts} />
         </div>
       )
     }

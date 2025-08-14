@@ -14,37 +14,39 @@ if (!categories || categories.length === 0) {
 }
 ---
 
-{variant === 'badges' ? (
-  <div class="badges">
-    {categories.map((c) => (
-      <a
-        class="badge"
-        href={`/categories/${c.slug}`}
-        aria-label={`Ver artículos de la categoría ${c.Name}`}
-        title={`Categoría: ${c.Name}`}
-      >
-        {c.Name}
-      </a>
-    ))}
-  </div>
-) : (
-  <>
-    {title && <h4>{title}</h4>}
-    <ul class="cat-list">
+{
+  variant === 'badges' ? (
+    <div class="badges">
       {categories.map((c) => (
-        <li>
-          <a
-            href={`/categories/${c.slug}`}
-            aria-label={`Ver artículos de la categoría ${c.Name}`}
-            title={`Categoría: ${c.Name}`}
-          >
-            {c.Name}
-          </a>
-        </li>
+        <a
+          class="badge"
+          href={`/categories/${c.slug}`}
+          aria-label={`Ver artículos de la categoría ${c.Name}`}
+          title={`Categoría: ${c.Name}`}
+        >
+          {c.Name}
+        </a>
       ))}
-    </ul>
-  </>
-)}
+    </div>
+  ) : (
+    <>
+      {title && <h4>{title}</h4>}
+      <ul class="cat-list">
+        {categories.map((c) => (
+          <li>
+            <a
+              href={`/categories/${c.slug}`}
+              aria-label={`Ver artículos de la categoría ${c.Name}`}
+              title={`Categoría: ${c.Name}`}
+            >
+              {c.Name}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </>
+  )
+}
 
 <style>
 

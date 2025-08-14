@@ -8,10 +8,19 @@ import Layout from "../../layouts/Layout.astro";
 import { posts } from "../../lib/data/posts";
 import { processContent } from "../../lib/utils/prepareContentForTOC";
 import Toc from "../../components/Toc.astro";
+import fetchApi from "../../lib/strapi.js";
 
 const { slug } = Astro.params;
 
-const post = posts.find((p) => p.slug === slug);
+const post = await fetchApi<Post[]>({
+    endpoint: "posts",
+    query: {
+      "filters[slug][$eq]": slug,
+      "populate": "*"
+    },
+    wrappedByKey: "data",
+    wrappedByList: true
+});
 
 if (!post) {
   return new Response(null, {
@@ -20,10 +29,13 @@ if (!post) {
   });
 }
 
-const { title, content, description, publishedAt, featuredImage, categories = [] } = post;
+const {title, content, description, publishedAt, featuredImage, categories} = post
 const { url, alternativeText } = featuredImage;
 
-const postContent = content;
+const url_image = "http://localhost:1337";
+const imgUrl = `${url_image}${url}`;
+
+const postContent = await marked.parse(content);
 const { processedContent: contentWithIds, headings: extractedHeadings } = processContent(postContent);
 ---
 
@@ -42,7 +54,7 @@ const { processedContent: contentWithIds, headings: extractedHeadings } = proces
           width="550"
           height="400"
           class="post-image"
-          src={url}
+          src={imgUrl}
           alt={alternativeText}
         />
       </div>
@@ -65,8 +77,8 @@ const { processedContent: contentWithIds, headings: extractedHeadings } = proces
     </article>
   </main>
 </Layout>
-<style>
 
+<style>
   .title-container {
     display: flex;
     flex-direction: row;
