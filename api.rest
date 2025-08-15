@@ -1,2 +1,2 @@
-GET http://localhost:1337/api/posts?&filters[categories][slug][$eq]=astro
+GET http://localhost:1337/api/posts?filters[slug][$eq]=astro-cms-astro-1&populate=featuredImage,categories&sort=publishedAt:desc
 Authorization: Bearer 01b1c723bf347e3d39e3ec8d27c057731decfe58bbc300983e5d3b36a491215cdd41c6a17218a6b07d48e18b9045483f8d1de9ad39bb025c573dc3ed0a5973002231f448446778fb3b3047f394c8f2534e8421c0ab2f5682e10dc78185529f908aefe9c6a9321d38d407b0ec123f0ba31221f8d1ee7034dbd2c9660e8affff48
