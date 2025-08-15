@@ -9,28 +9,56 @@ interface Props {
 
 const { posts: providedPosts } = Astro.props as Partial<Props>;
 
-const posts: Post[] = providedPosts ?? await fetchApi<Post[]>({
-  endpoint: "posts?populate=featuredImage&populate=categories",
-  query: {
-    sort: "createdAt:desc",
-    "pagination[limit]": "6",
-  },
-  wrappedByKey: "data"
-});
+const posts: Post[] =
+  providedPosts ??
+  (await fetchApi<Post[]>({
+    endpoint: "posts",
+    query: {
+      // Solo obtener los campos que necesitamos
+      "fields[0]": "title",
+      "fields[1]": "description",
+      "fields[2]": "slug",
+      "fields[3]": "publishedAt",
+      // Popular featuredImage pero solo con los campos necesarios
+      "populate[featuredImage][fields][0]": "url",
+      "populate[featuredImage][fields][1]": "alternativeText",
+      // Popular categories con solo los campos necesarios
+      "populate[categories][fields][0]": "Name",
+      "populate[categories][fields][1]": "slug",
+      "populate[categories][fields][2]": "documentId",
+      sort: "createdAt:desc",
+      "pagination[limit]": "6",
+    },
+    wrappedByKey: "data",
+  }));
+
+console.log(posts);
 
 const url_image = "http://localhost:1337";
 ---
+
 {
   posts.map((post) => {
-    const { title, description, slug, publishedAt, featuredImage, categories = [] } = post;
+    const {
+      title,
+      description,
+      slug,
+      publishedAt,
+      featuredImage,
+      categories = [],
+    } = post;
     const { url, alternativeText } = featuredImage || {};
-    const imageUrl = featuredImage ? `${url_image}${url}` : '';
+    const imageUrl = featuredImage ? `${url_image}${url}` : "";
 
     return (
       <article>
-          <a href={`/blog/${slug}`} aria-label={`Leer: ${title}`} title={title}>
+        <a href={`/blog/${slug}`} aria-label={`Leer: ${title}`} title={title}>
           {featuredImage && (
-            <img src={imageUrl} alt={alternativeText} />
+            <img
+              transition:name={`img-${slug}`}
+              src={imageUrl}
+              alt={alternativeText}
+            />
           )}
           <div class="content">
             <h2>{title}</h2>

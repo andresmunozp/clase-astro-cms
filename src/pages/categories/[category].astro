@@ -2,8 +2,6 @@
 import Layout from "../../layouts/Layout.astro";
 import type Post from "../../interfaces/post";
 import type { Category } from "../../interfaces/post";
-import { posts } from "../../lib/data/posts";
-import { categories as localCategories } from "../../lib/data/categories";
 import Cards from "../../components/Cards.astro";
 import fetchApi from "../../lib/strapi.js";
 
@@ -12,14 +10,28 @@ const { category } = Astro.params;
 const posts = await fetchApi<Post[]>({
   endpoint: "posts",
   query: {
-    "filters[categories][slug][$contains]": category,
-    "populate": "*"
+    "filters[categories][slug][$contains]": `${category}`,
+    // Solo obtener los campos que necesita el componente Cards
+    "fields[0]": "title",
+    "fields[1]": "description",
+    "fields[2]": "slug",
+    "fields[3]": "publishedAt",
+    // Popular featuredImage pero solo con los campos necesarios
+    "populate[featuredImage][fields][0]": "url",
+    "populate[featuredImage][fields][1]": "alternativeText",
+    // Popular categories con solo los campos necesarios
+    "populate[categories][fields][0]": "Name",
+    "populate[categories][fields][1]": "slug",
+    "populate[categories][fields][2]": "documentId",
   },
-  wrappedByKey: "data"
+  wrappedByKey: "data",
 });
 
 if (!posts || posts.length === 0) {
-  return new Response(null, { status: 404, statusText: "Categoría no encontrada" });
+  return new Response(null, {
+    status: 404,
+    statusText: "Categoría no encontrada",
+  });
 }
 
 const categoryPosts = posts;
@@ -45,15 +57,15 @@ const description = `Artículos en la categoría ${name}`;
 </Layout>
 
 <style>
-  .category { 
-    max-width: 900px; 
-    margin: 0 auto; 
-    padding: 20px; 
+  .category {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
   }
-  .grid-article { 
-    display: grid; 
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
-    gap: 16px; 
-    padding: 16px 0; 
+  .grid-article {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 16px;
+    padding: 16px 0;
   }
 </style>

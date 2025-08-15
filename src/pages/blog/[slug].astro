@@ -1,50 +1,61 @@
 ---
-
 import { marked } from "marked";
 import type Post from "../../interfaces/post";
 import Categories from "../../components/Categories.astro";
 import Layout from "../../layouts/Layout.astro";
-import { posts } from "../../lib/data/posts";
 import { processContent } from "../../lib/utils/prepareContentForTOC";
 import Toc from "../../components/Toc.astro";
 import fetchApi from "../../lib/strapi.js";
 
 const { slug } = Astro.params;
 
-const post = await fetchApi<Post[]>({
-    endpoint: "posts",
-    query: {
-      "filters[slug][$eq]": slug,
-      "populate": "*"
-    },
-    wrappedByKey: "data",
-    wrappedByList: true
+const posts = await fetchApi<Post>({
+  endpoint: "posts",
+  query: {
+    "filters[slug][$eq]": `${slug}`,
+    // Solo obtener los campos que necesitamos para la página de detalle
+    "fields[0]": "title",
+    "fields[1]": "content",
+    "fields[2]": "description",
+    "fields[3]": "publishedAt",
+    // Popular featuredImage pero solo con los campos necesarios
+    "populate[featuredImage][fields][0]": "url",
+    "populate[featuredImage][fields][1]": "alternativeText",
+    // Popular categories con solo los campos necesarios
+    "populate[categories][fields][0]": "Name",
+    "populate[categories][fields][1]": "slug",
+    "populate[categories][fields][2]": "documentId",
+  },
+  wrappedByKey: "data",
+  wrappedByList: true,
 });
 
-if (!post) {
+if (!posts) {
   return new Response(null, {
     status: 404,
     statusText: "Not found",
   });
 }
 
-const {title, content, description, publishedAt, featuredImage, categories} = post
+console.log(posts);
+
+const { title, content, description, publishedAt, featuredImage, categories } =
+  posts;
 const { url, alternativeText } = featuredImage;
 
 const url_image = "http://localhost:1337";
 const imgUrl = `${url_image}${url}`;
 
 const postContent = await marked.parse(content);
-const { processedContent: contentWithIds, headings: extractedHeadings } = processContent(postContent);
+const { processedContent: contentWithIds, headings: extractedHeadings } =
+  processContent(postContent);
 ---
 
 <Layout title={title} description={description}>
-
   <header class="post-header">
-
     <div class="title-container">
-        <a href="/">Volver</a>
-        <h1>{title}</h1>
+      <a href="/">Volver</a>
+      <h1>{title}</h1>
     </div>
 
     <div class="image-description-container">
@@ -66,7 +77,6 @@ const { processedContent: contentWithIds, headings: extractedHeadings } = proces
         <Categories categories={categories} variant="badges" />
       </div>
     </div>
-
   </header>
 
   <main>
@@ -116,7 +126,9 @@ const { processedContent: contentWithIds, headings: extractedHeadings } = proces
     flex: 1;
   }
 
-  .description-data :global(.badges) { margin-top: 8px; }
+  .description-data :global(.badges) {
+    margin-top: 8px;
+  }
 
   /* Estilos para el contenido del post */
   :global(.post-content p),
@@ -167,7 +179,6 @@ const { processedContent: contentWithIds, headings: extractedHeadings } = proces
   .post-image-container {
     display: block;
     justify-content: center;
-    
   }
 
   .post-image {
@@ -177,8 +188,6 @@ const { processedContent: contentWithIds, headings: extractedHeadings } = proces
     border-radius: 8px;
     object-fit: cover;
   }
-
-
 
   /* Enlaces de ancla (#) */
   :global(.anchor-link) {
