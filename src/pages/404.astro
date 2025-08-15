@@ -2,9 +2,10 @@
 import Layout from "../layouts/Layout.astro";
 
 const title = "Página no encontrada";
+const description = "Lo sentimos, la página que buscas no existe o ha sido movida.";
 ---
 
-<Layout title={title}>
+<Layout title={title} description={description}>
   <h1>{title}</h1>
 </Layout>
 
@@ -12,6 +13,5 @@ const title = "Página no encontrada";
   h1 {
     text-align: center;
     margin-top: 50px;
-    font-size: 2rem;
   }
 </style>

@@ -3,21 +3,9 @@ export const prerender = false;
 import Layout from "../../layouts/Layout.astro";
 import type Post from "../../interfaces/post";
 import type { Category } from "../../interfaces/post";
-import { posts } from "../../lib/data/posts";
-import { categories as localCategories } from "../../lib/data/categories";
 import Cards from "../../components/Cards.astro";
 
-const { category: slug } = Astro.params;
-
-const cat = localCategories.find((c) => c.slug === slug);
-
-if (!cat) {
-  return new Response(null, { status: 404, statusText: "Categoría no encontrada" });
-}
-
-const filteredPosts = posts.filter((post) =>
-  post.categories?.some((c) => c.Name === cat.name || c.Name === cat.Name)
-);
+const filteredPosts = []
 
 const name = cat.name || cat.Name;
 const title = `Categoría: ${name}`;

@@ -1,5 +1,4 @@
 ---
-import { posts as localPosts } from "../lib/data/posts";
 import Categories from "./Categories.astro";
 import type Post from "../interfaces/post.js";
 
@@ -9,7 +8,7 @@ interface Props {
 
 const { posts: providedPosts } = Astro.props as Partial<Props>;
 
-const posts: Post[] = providedPosts ?? localPosts.slice(0, 6);
+const posts: Post[] = providedPosts ?? [];
 ---
 {
   posts.map((post) => {
