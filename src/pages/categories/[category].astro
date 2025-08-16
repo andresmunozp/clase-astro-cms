@@ -4,11 +4,8 @@ import type Post from "../../interfaces/post";
 import type { Category } from "../../interfaces/post";
 import Cards from "../../components/Cards.astro";
 
-const filteredPosts = []
 
-const name = cat.name || cat.Name;
-const title = `Categoría: ${name}`;
-const description = `Artículos en la categoría ${name}`;
+
 ---
 
 <Layout title={title} description={description}>

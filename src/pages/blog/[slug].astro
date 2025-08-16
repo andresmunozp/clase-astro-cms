@@ -6,7 +6,7 @@ import Layout from "../../layouts/Layout.astro";
 import { processContent } from "../../lib/utils/prepareContentForTOC";
 import Toc from "../../components/Toc.astro";
 
-const post = [];
+
 
 const postContent = content;
 const { processedContent: contentWithIds, headings: extractedHeadings } = processContent(postContent);
@@ -27,7 +27,8 @@ const { processedContent: contentWithIds, headings: extractedHeadings } = proces
           width="550"
           height="400"
           class="post-image"
-          src={url}
+          transition:name={`img-${slug}`}
+          src={urlImage}
           alt={alternativeText}
         />
       </div>

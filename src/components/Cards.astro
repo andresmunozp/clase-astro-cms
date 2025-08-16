@@ -1,24 +1,20 @@
 ---
 import Categories from "./Categories.astro";
-import type Post from "../interfaces/post.js";
+import type Post from "../interfaces/post.ts";
 
-interface Props {
-  posts?: Post[];
-}
-
-const { posts: providedPosts } = Astro.props as Partial<Props>;
-
-const posts: Post[] = providedPosts ?? [];
+const posts:Post[] = []
+  
 ---
 {
   posts.map((post) => {
-    const { title, description, slug, publishedAt, featuredImage, categories = [] } = post
-    const { url, alternativeText } = featuredImage;
+    const { title, description, slug, publishedAt, featuredImage, categories } = post
+    const { url, alternativeText } = featuredImage
+    const urlImage = `http://localhost:1337${url}`
     
     return (
       <article>
           <a href={`/blog/${slug}`} aria-label={`Leer: ${title}`} title={title}>
-          <img src={url} alt={alternativeText} />
+          <img transition:name={`img-${slug}`} src={urlImage} alt={alternativeText} />
           <div class="content">
             <h2>{title}</h2>
             <p>{description}</p>
