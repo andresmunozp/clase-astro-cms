@@ -1,3 +1,32 @@
+# Itinerario
+
+## Panel Strapi
+- Instalación y configuración del panel de administración.  
+- Creación y gestión de colecciones y permisos.  
+
+## Conocer Astro
+- Introducción al framework Astro.  
+- Estructura básica de un proyecto Astro.  
+
+## Cómo hacer conexiones a la API de Strapi
+- Métodos para consumir la API desde Astro.  
+- Ejemplos prácticos de peticiones.  
+
+## Manejo de las variables de entorno
+- Configuración de variables sensibles.  
+- Uso seguro en el proyecto.  
+
+## Funciones para la conexión de la API
+- Implementación de funciones reutilizables.   
+
+## Optimizaciones en las solicitudes a Strapi
+- Reducción de llamadas innecesarias.  
+- Uso eficiente de props y fetch.  
+
+## Transiciones entre páginas
+- Implementación de transiciones suaves.  
+- Experiencia de usuario mejorada.  
+
 # Astro Starter Kit: Basics
 
 ```sh
